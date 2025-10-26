@@ -1,8 +1,6 @@
 const nodemailer = require("nodemailer");
 const { senders } = require("../../models");
 
-
-
 async function sendNodemailerEmail(emailData) {
   try {
     const {
@@ -17,13 +15,15 @@ async function sendNodemailerEmail(emailData) {
       options = {},
     } = emailData;
 
+    const testAccount = await nodemailer.createTestAccount();
+
     const transporter = nodemailer.createTransport({
       host: senderConfig.smtpHost,
       port: Number(senderConfig.smtpPort),
       secure: Number(senderConfig.smtpPort) === 465,
       auth: {
-        user: senderConfig.smtpUser,
-        pass: senderConfig.smtpPass,
+        user: testAccount?.user,
+        pass: testAccount?.pass,
       },
       tls: { rejectUnauthorized: false },
       pool: options.pool || false,
@@ -35,17 +35,12 @@ async function sendNodemailerEmail(emailData) {
       await transporter.verify();
     }
 
-    const recipients = Array.isArray(to)
-      ? to.map((r) => (typeof r === "string" ? r : r.email))
-      : typeof to === "string"
-      ? to
-      : to?.email;
 
     const mailOptions = {
       from: senderConfig.fromName
         ? `${senderConfig.fromName} <${senderConfig.fromEmail}>`
         : senderConfig.fromEmail,
-      to: recipients,
+      to: to,
       subject,
       text: text || undefined,
       html: html || undefined,
@@ -84,40 +79,3 @@ async function sendNodemailerEmail(emailData) {
 }
 
 module.exports = sendNodemailerEmail;
-
-
-// async function unitTestEmailSending() {
-//   try {
-//     const senderAccounts = await senders.findAll();
-
-//     if (!senderAccounts || senderAccounts.length === 0) {
-//       console.log("No sender accounts found!");
-//       return;
-//     }
-
-//     for (const sender of senderAccounts) {
-//       const senderConfig = sender.dataValues;
-
-//       console.log(`\n=== Testing sender: ${senderConfig.fromEmail} ===`);
-
-//       const emailData = {
-//         senderConfig,
-//         to: "yourtestemail@example.com", 
-//         subject: `Test Email from ${senderConfig.fromEmail}`,
-//         text: "This is a test email sent via Nodemailer.",
-//         html: `<p><b>This is a test email</b> from <i>${senderConfig.fromEmail}</i></p>`,
-//         options: { verify: false }, 
-//       };
-
-//       const result = await sendNodemailerEmail(emailData);
-//       console.log("Result:", result);
-//     }
-//   } catch (error) {
-//     console.error("Error in unitTestEmailSending:", error);
-//   }
-// }
-
-
-// (async () => {
-//   await unitTestEmailSending(senders);
-// })();

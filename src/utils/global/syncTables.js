@@ -5,11 +5,15 @@ const {
   senders,
   sequelize,
   contacts,
+  contact_tags,
+  tags,
+  emails,
+  email_jobs
 } = require("../../models");
 
 async function alterTable() {
   try {
-    await contacts.sync({ force: true });
+    await emails.sync({ force: true });
     console.log(
       "The table for the emailconfiguration model was just (re)created!"
     );

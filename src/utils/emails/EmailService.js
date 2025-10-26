@@ -1,21 +1,24 @@
-const sendNodemailerEmail = require("../utils/sendNodemailerEmail");
 const { sendSesEmail } = require("./AwsSmtpService");
+const sendNodemailerEmail = require("./NodeMailerService");
 
 class EmailService {
   static async sendEmail(senderConfig, options) {
     try {
-      let result;
 
+      let result;
+      
       switch (senderConfig.provider) {
         case "testing":
           result = await sendNodemailerEmail({
             senderConfig,
             ...options,
           });
+
           break;
 
         case "ses":
-          sendSesEmail(senderConfig, emailData);
+          result = await sendSesEmail(senderConfig, emailData);
+
           break;
 
         default:

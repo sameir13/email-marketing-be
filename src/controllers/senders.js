@@ -83,8 +83,6 @@ exports.addSender = async (req, res, next) => {
   }
 };
 
-
-
 exports.getAllSenders = async (req, res, next) => {
   try {
     const userId = req.user.id;

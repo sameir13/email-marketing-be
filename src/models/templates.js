@@ -21,14 +21,35 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+
+      type: {
+        type: DataTypes.ENUM("textEmail", "designTemplate"),
+        allowNull: false,
+      },
       name: { type: DataTypes.STRING, allowNull: false },
       htmlContent: { type: DataTypes.TEXT, allowNull: false },
+      designJson: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        get() {
+          const rawValue = this.getDataValue("designJson");
+          try {
+            return JSON.parse(rawValue);
+          } catch {
+            return rawValue;
+          }
+        },
+      },
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     },
     {
       sequelize,
       modelName: "templates",
-      timestamps:true
+      timestamps: true,
     }
   );
   return templates;

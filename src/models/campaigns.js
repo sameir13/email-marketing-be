@@ -8,20 +8,25 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-
-
       campaigns.hasMany(models.templates, {
         foreignKey: "templateId",
         allowNull: false,
       });
-
 
       campaigns.belongsTo(models.users, {
         foreignKey: "userId",
         allowNull: false,
       });
 
+      campaigns.hasMany(models.emails, {
+        foreignKey: "campaignId",
+        allowNull: false,
+      });
 
+      campaigns.hasMany(models.email_jobs, {
+        foreignKey: "campaignId",
+        allowNull: false,
+      });
     }
   }
   campaigns.init(
@@ -32,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       name: { type: DataTypes.STRING, allowNull: false },
-      subject: { type: DataTypes.STRING, allowNull: false },
-      content: { type: DataTypes.TEXT, allowNull: false },
+      subject: { type: DataTypes.STRING, allowNull: true },
+      content: { type: DataTypes.TEXT, allowNull: true },
       status: {
         type: DataTypes.ENUM(
           "draft",
@@ -55,13 +60,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: [],
       },
-      daysOfWeek: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
-        allowNull: true,
-      },
+
       timezone: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         defaultValue: "UTC",
       },
 
@@ -78,7 +80,8 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       startDate: { type: DataTypes.DATE, allowNull: false },
-      endDate: { type: DataTypes.DATE, allowNull: true },
+      startTime: { type: DataTypes.STRING, allowNull: false },
+
       scheduledAt: { type: DataTypes.DATE },
       completedAt: { type: DataTypes.DATE },
       totalContacts: { type: DataTypes.INTEGER, defaultValue: 0 },

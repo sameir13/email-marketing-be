@@ -2,14 +2,21 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class senders extends Model {
-  
     static associate(models) {
-
       senders.belongsTo(models.users, {
         foreignKey: "userId",
         allowNull: false,
       });
-    
+
+      senders.hasMany(models.emails, {
+        foreignKey: "senderId",
+        allowNull: false,
+      });
+
+      senders.hasMany(models.email_jobs, {
+        foreignKey: "senderId",
+        allowNull: false,
+      });
     }
   }
   senders.init(
